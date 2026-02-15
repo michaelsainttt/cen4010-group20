@@ -61,8 +61,20 @@ def top_10_books():
     return jsonify(response.data)
 
 
-@app.route("/books/discount", methods=["PUT"])
+@app.route("/books/publisher-discount", methods=["PUT"])
 def discount_books():
+    publisher = request.args.get("publisher")
+    discounted_percent = float(request.args.get("discount_percent"))
+
+    books_response = supabase.table("books").select("*").eq("publisher", publisher).execute()
+    books = books_response.data
+
+    for book in books:
+        new_price = float(book["price"]) * (1 - discount_percent / 100)
+        supabase.table("books").update({
+            "discount_percent": discount_percent,
+            "discounted_price": new_price
+        }).eq("id", book["id"]).execute()
    
     port = int(os.getenv("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
