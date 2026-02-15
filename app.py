@@ -172,6 +172,7 @@ def get_books_id(book_id):
             return jsonify(book)
     return jsonify({"error": "Book Not Found"}), 404 #RETURN ERROR IF BOOK NOT FOUND 
 
+#API TO SEE BASED BOOKS ON GENRE
 @app.route("/books/genre", methods=["GET"])
 def get_books_genre(books_genre):
     for book in BOOKS:
@@ -179,9 +180,17 @@ def get_books_genre(books_genre):
             return jsonify(book)
     return jsonify({"error": "Book Not Found"}), 404
 
-@app.route("/books/<int:rating>", methods=["GET"])
-def get_book_rating(rating):
-    
+#TO SEE THE MINIMUM RATING
+@app.route("/books/<float:min_rating>", methods=["GET"])
+def books_by_rating(min_rating):
+    filtered_books = []
+    for book in BOOKS:
+        if book["rating"] >= min_rating
+        filtered_books.append(book)
+    return jsonify(filtered_books)
+
+#TO SEE THE TOP 10 MOST SOLD BOOKS
+
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
