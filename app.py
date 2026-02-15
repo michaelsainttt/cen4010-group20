@@ -20,7 +20,7 @@ def health():
 #API TO FIND BOOK
 @app.route("/books", methods=["GET"])
 def only_title():
-    response = supabase.table("books").select("id, title").execute()
+    response = supabase.table("books").execute()
     return jsonify(response.data)
 
 
@@ -54,7 +54,15 @@ def books_by_rating(min_rating):
     return jsonify(response.data)
 
 #TO SEE THE TOP 10 MOST SOLD BOOKS
+@app.route("/books/top10", methods=["GET"])
+def top_10_books():
+    response = supabase.table("books").select("*").order("copies_sold", ascending=False).limit(10).execute()
 
-if __name__ == "__main__":
+    return jsonify(response.data)
+
+
+@app.route("/books/discount", methods=["PUT"])
+def discount_books():
+   
     port = int(os.getenv("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
