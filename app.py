@@ -1,149 +1,16 @@
 import os
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from dotenv import load_dotenv
+from supabase import create_client
 
 load_dotenv()
 
 app = Flask(__name__)
 
-BOOKS = [
-    {
-        "id": 1,
-        "title": "Don Quixote",
-        "author": "Miguel de Cervantes",
-        "description": "A man becomes obsessed with chivalry and becomes a knight.",
-        "genre": "Classic",
-        "rating": 4.0,
-        "price": 12.99
-    },
-    {
-        "id": 2,
-        "title": "1984",
-        "author": "George Orwell",
-        "description": "A dystopian novel about surveillance and totalitarian control.",
-        "genre": "Dystopian",
-        "rating": 4.7,
-        "price": 9.99
-    },
-    {
-        "id": 3,
-        "title": "The Great Gatsby",
-        "author": "F. Scott Fitzgerald",
-        "description": "A story of wealth, love, and tragedy in the 1920s.",
-        "genre": "Classic",
-        "rating": 4.3,
-        "price": 10.99
-    },
-    {
-        "id": 4,
-        "title": "To Kill a Mockingbird",
-        "author": "Harper Lee",
-        "description": "A novel about justice and racism in the American South.",
-        "genre": "Fiction",
-        "rating": 4.8,
-        "price": 8.99
-    },
-    {
-        "id": 5,
-        "title": "Moby-Dick",
-        "author": "Herman Melville",
-        "description": "A captain’s obsession with hunting a giant white whale.",
-        "genre": "Adventure",
-        "rating": 3.9,
-        "price": 14.99
-    },
-    {
-        "id": 6,
-        "title": "Pride and Prejudice",
-        "author": "Jane Austen",
-        "description": "A romantic novel about manners, class, and misunderstandings.",
-        "genre": "Romance",
-        "rating": 4.6,
-        "price": 7.99
-    },
-    {
-        "id": 7,
-        "title": "The Hobbit",
-        "author": "J.R.R. Tolkien",
-        "description": "A fantasy adventure about a hobbit joining a quest for treasure.",
-        "genre": "Fantasy",
-        "rating": 4.8,
-        "price": 11.49
-    },
-    {
-        "id": 8,
-        "title": "Harry Potter and the Sorcerer's Stone",
-        "author": "J.K. Rowling",
-        "description": "A boy discovers he is a wizard and attends Hogwarts School.",
-        "genre": "Fantasy",
-        "rating": 4.9,
-        "price": 8.49
-    },
-    {
-        "id": 9,
-        "title": "The Catcher in the Rye",
-        "author": "J.D. Salinger",
-        "description": "A teenager struggles with identity and growing up.",
-        "genre": "Fiction",
-        "rating": 4.0,
-        "price": 6.99
-    },
-    {
-        "id": 10,
-        "title": "The Book Thief",
-        "author": "Markus Zusak",
-        "description": "A girl in Nazi Germany finds comfort in stealing books.",
-        "genre": "Historical Fiction",
-        "rating": 4.7,
-        "price": 12.49
-    },
-    {
-        "id": 11,
-        "title": "Sapiens",
-        "author": "Yuval Noah Harari",
-        "description": "A history of humankind from the Stone Age to today.",
-        "genre": "Nonfiction",
-        "rating": 4.7,
-        "price": 16.99
-    },
-    {
-        "id": 12,
-        "title": "The Art of War",
-        "author": "Sun Tzu",
-        "description": "An ancient guide to military strategy and leadership.",
-        "genre": "Philosophy",
-        "rating": 4.4,
-        "price": 5.99
-    },
-    {
-        "id": 13,
-        "title": "The Road",
-        "author": "Cormac McCarthy",
-        "description": "A father and son survive in a bleak post-apocalyptic world.",
-        "genre": "Post-Apocalyptic",
-        "rating": 4.1,
-        "price": 13.99
-    },
-    {
-        "id": 14,
-        "title": "Dune",
-        "author": "Frank Herbert",
-        "description": "A sci-fi epic about politics, power, and survival on a desert planet.",
-        "genre": "Science Fiction",
-        "rating": 4.6,
-        "price": 10.99
-    },
-    {
-        "id": 15,
-        "title": "The Hunger Games",
-        "author": "Suzanne Collins",
-        "description": "A girl fights to survive in a deadly televised competition.",
-        "genre": "Dystopian",
-        "rating": 4.5,
-        "price": 9.49
-    }
-
-]
+supabase = create_client(
+    os.getenv("SUPABASE_URL"),
+    os.getenv("SUPABASE_ANON_KEY")
+)
 
 @app.get("/health")
 def health():
@@ -153,41 +20,38 @@ def health():
 #API TO FIND BOOK
 @app.route("/books", methods=["GET"])
 def only_title():
-    title_only = []
-    for book in BOOKS:
-        #ONLY DISPLAYS THE TITLE AND ID OF THE BOOK 
-        title_only.append({
-            "id": book["id"],
-            "title": book["title"]
-        })
-
-    return jsonify(title_only)
+    response = supabase.table("books").select("id, title").execute()
+    return jsonify(response.data)
 
 
 #API TO SEE MORE DETAILS ABOUT BOOK VIA BOOK_ID
 @app.route("/books/<int:book_id>", methods=["GET"])
 def get_books_id(book_id):
-    for book in BOOKS:
-        if book["id"] == book_id:
-            return jsonify(book)
-    return jsonify({"error": "Book Not Found"}), 404 #RETURN ERROR IF BOOK NOT FOUND 
+    response = supabase.table("books").select("*").eq("id", book_id).execute()
+
+    if len(response.data) == 0:
+        return jsonify({"error": "Book Not Found"}),404
+    return jsonify(response.data[0])
 
 #API TO SEE BASED BOOKS ON GENRE
 @app.route("/books/genre", methods=["GET"])
-def get_books_genre(books_genre):
-    for book in BOOKS:
-        if book["genre"] == books_genre:
-            return jsonify(book)
-    return jsonify({"error": "Book Not Found"}), 404
+def get_books_genre():
+    books_genre = request.args.get("genre")
+
+    response = supabase.table("books").select("*").eq("genre",books_genre).execute()
+
+    if len(response.data) == 0:
+        return jsonify({"error": "Book Not Found"}),404
+    return jsonify(response.data[0])
 
 #TO SEE THE MINIMUM RATING
 @app.route("/books/<float:min_rating>", methods=["GET"])
 def books_by_rating(min_rating):
-    filtered_books = []
-    for book in BOOKS:
-        if book["rating"] >= min_rating
-        filtered_books.append(book)
-    return jsonify(filtered_books)
+    response = supabase.table("books").select("*").gte("rating",min_rating).execute()
+
+    if len(response.data) == 0:
+        return jsonify({"error": "Book Not Found"})
+    return jsonify(response.data)
 
 #TO SEE THE TOP 10 MOST SOLD BOOKS
 
