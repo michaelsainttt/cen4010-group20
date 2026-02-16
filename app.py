@@ -24,7 +24,7 @@ def only_title():
     return jsonify(response.data)
 
 
-#API TO SEE MORE DETAILS ABOUT BOOK VIA BOOK_ID
+#API TO SEE BOOK VIA BOOK_ID
 @app.route("/books/<int:book_id>", methods=["GET"])
 def get_books_id(book_id):
     response = supabase.table("books").select("*").eq("id", book_id).execute()
@@ -60,7 +60,7 @@ def top_10_books():
 
     return jsonify(response.data)
 
-
+#TO APPLY PUBLISHER DISCOUNT
 @app.route("/books/publisher-discount", methods=["PUT"])
 def discount_books():
     publisher = request.args.get("publisher")
@@ -90,7 +90,8 @@ def discount_books():
             "discounted_price": new_price
         }).eq("id", book["id"]).execute()
 
-    return jsonify({"publisher": publisher, "discount_percent": discount_percent, "updated": len(books)}), 200
+    return jsonify({"publisher": publisher, "discount_percent": discount_percent, "updated": len(books), "discounted price": new_price}), 200
+
 
    
 port = int(os.getenv("PORT", 5000))
