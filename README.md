@@ -1,6 +1,6 @@
 # CEN4010 Group 20 Bookstore REST API
 
-Stack: Flask + MySQL
+Stack: Flask + Supabase
 Testing: Postman
 
 ## Run (later)
