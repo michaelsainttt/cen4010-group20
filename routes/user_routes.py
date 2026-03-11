@@ -6,7 +6,6 @@ user_bp = Blueprint("user", __name__, url_prefix="/users")
 @user_bp.route("", methods=["POST"])
 def create_user():
     data = request.get_json()
-
     username = data.get("username")
     password = data.get("password")
     email = data.get("email")
@@ -17,37 +16,18 @@ def create_user():
     if not username or not password:
         return jsonify({"error": "username and password are required"}), 400
 
-    # check if username already exists
     existing_user = supabase.table("users").select("id").eq("username", username).execute()
     if existing_user.data:
         return jsonify({"error": "username already exists"}), 409
 
-    # if email is provided, create auth account
-    auth_user_id = None
-    if email:
-        try:
-            auth_response = supabase.auth.sign_up({
-                "email": email,
-                "password": password
-            })
-
-            if auth_response.user:
-                auth_user_id = auth_response.user.id
-            else:
-                return jsonify({"error": "failed to create auth account"}), 400
-
-        except Exception as e:
-            return jsonify({"error": f"auth signup failed: {str(e)}"}), 400
-
-    # store profile in users table
     response = supabase.table("users").insert({
-        "auth_user_id": auth_user_id,
+        "auth_user_id": None,
         "username": username,
         "first_name": first_name,
         "last_name": last_name,
         "email": email,
         "home_address": home_address
-    }).execute()
+     }).execute()
 
     return jsonify({
         "message": "user created successfully",
