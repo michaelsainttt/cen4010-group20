@@ -22,3 +22,23 @@ def create_wishlist():
         "message": "Wishlist created",
         "data": result.data
     }), 201
+
+@wishlist_bp.route("/wishlist/<int:user_id>", methods=["GET"])
+def get_wishlist(user_id):
+
+    result = supabase.table("wishlist").select("*").eq("user_id", user_id).execute()
+
+    if len(result.data) == 0:
+        return jsonify({"error": "Wishlist not found"}), 404
+
+    return jsonify(result.data), 200
+
+@wishlist_bp.route("/wishlist/<int:user_id>", methods=["DELETE"])
+def delete_wishlist(user_id):
+
+    result = supabase.table("wishlist").delete().eq("user_id", user_id).execute()
+
+    return jsonify({
+        "message": "Wishlist deleted",
+        "deleted": len(result.data)
+    }), 200
