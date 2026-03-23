@@ -3,6 +3,7 @@ from flask import Flask
 from routes.books_routes import books_bp
 from routes.wishlist_routes import wishlist_bp
 from routes.user_routes import user_bp
+from routes.book_details_routes import book_details_bp
 
 app = Flask(__name__)
 
@@ -13,6 +14,7 @@ def health():
 app.register_blueprint(books_bp)
 app.register_blueprint(wishlist_bp)
 app.register_blueprint(user_bp)
+app.register_blueprint(book_details_bp)
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5001))
