@@ -1,0 +1,19 @@
+$kind: http-request
+name: Create Comment
+url: "{{baseURL}}/comments"
+method: POST
+headers:
+  apikey: "{{apikey}}"
+  Authorization: Bearer {{apikey}}
+body:
+  type: json
+  content: "{\r
+
+    \    \"user_id\": 1,\r
+
+    \    \"book_id\": 9,\r
+
+    \    \"comment\": \"This book is awesome!\"\r
+
+    }"
+order: 4246194646842399

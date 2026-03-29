@@ -1,0 +1,10 @@
+$kind: http-request
+name: Get Ratings
+url: "{{baseURL}}/ratings?book_id=eq.9"
+method: GET
+headers:
+  apikey: "{{apikey}}"
+  Authorization: Bearer {{apikey}}
+queryParams:
+  book_id: eq.9
+order: 4453659242406402

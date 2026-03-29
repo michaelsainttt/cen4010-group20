@@ -1,0 +1,19 @@
+$kind: http-request
+name: Create Rating
+url: "{{baseURL}}/ratings"
+method: POST
+headers:
+  apikey: "{{apikey}}"
+  Authorization: Bearer {{apikey}}
+body:
+  type: json
+  content: "{\r
+
+    \    \"user_id\": 1,\r
+
+    \    \"book_id\": 9,\r
+
+    \    \"rating\": 6\r
+
+    }"
+order: 1774229592481
