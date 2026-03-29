@@ -3,6 +3,7 @@ from database.supabase_client import supabase
 
 cart_bp = Blueprint("cart_bp", __name__)
 
+# Retrieves cart items
 @cart_bp.route("/cart/<int:user_id>", methods=["GET"])
 def get_cart(user_id):
     response = supabase.table("shopping_cart") \
@@ -11,6 +12,7 @@ def get_cart(user_id):
         .execute()
     return jsonify(response.data)
 
+# Adds a book to the cart
 @cart_bp.route("/cart/add", methods=["POST"])
 def add_to_cart():
     data = request.json
@@ -25,6 +27,7 @@ def add_to_cart():
 
     return jsonify({"message": "Book added to cart"})
 
+# Removes a book from the cart
 @cart_bp.route("/cart/remove", methods=["DELETE"])
 def remove_from_cart():
     data = request.json
@@ -40,6 +43,7 @@ def remove_from_cart():
 
     return jsonify({"message": "Book removed from cart"})
 
+# Calculates the subtotal of the cart for a given user
 @cart_bp.route("/cart/subtotal/<int:user_id>", methods=["GET"])
 def cart_subtotal(user_id):
     cart_items = supabase.table("shopping_cart") \
