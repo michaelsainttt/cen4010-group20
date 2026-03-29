@@ -59,3 +59,4 @@ def cart_subtotal(user_id):
             subtotal += float(book.data[0]["price"])
 
     return jsonify({"user_id": user_id, "subtotal": subtotal})
+#shopping cart update
