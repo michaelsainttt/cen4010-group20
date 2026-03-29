@@ -1,0 +1,11 @@
+$kind: http-request
+name: Get Average Rating
+url: "{{baseURL}}/ratings?select=rating&book_id=eq.9"
+method: GET
+headers:
+  apikey: "{{apikey}}"
+  Authorization: Bearer {{apikey}}
+queryParams:
+  select: rating
+  book_id: eq.9
+order: 4433834643643566

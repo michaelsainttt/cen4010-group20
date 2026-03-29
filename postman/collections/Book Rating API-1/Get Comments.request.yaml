@@ -1,0 +1,10 @@
+$kind: http-request
+name: Get Comments
+url: "{{baseURL}}/comments?book_id=eq.9"
+method: GET
+headers:
+  apikey: "{{apikey}}"
+  Authorization: Bearer {{apikey}}
+queryParams:
+  book_id: eq.9
+order: 4397456509235655
