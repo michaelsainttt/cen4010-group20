@@ -43,6 +43,16 @@ def add_book():
     response = supabase.table("books").insert([data]).execute()
     return jsonify(response.data), 201
 
+#DELETE CURRENT BOOKS
+@books_bp.route("/books/<int:book_id>", methods=["DELETE"])
+def delete_book(book_id):
+    response = supabase.table("books").delete().eq("id", book_id).execute()
+
+    if len(response.data) == 0:
+        return jsonify({"error": "Book not found"}), 404
+
+    return jsonify({"message": f"Book {book_id} deleted successfully"})
+
 
 @books_bp.route("/books/rating/<float:min_rating>", methods=["GET"])
 def books_by_rating(min_rating):
