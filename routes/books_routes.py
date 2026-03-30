@@ -31,6 +31,18 @@ def get_books_genre():
 
     return jsonify(response.data)
 
+#CREATE NEW BOOKS 
+@books_bp.route("/books", methods=["POST"])
+def add_book():
+    data = request.get_json()
+
+    required_fields = ["title", "author", "publisher", "genre", "price", "copies_sold", "rating"]
+    if not all(field in data for field in required_fields):
+        return jsonify({"error": f"Missing required fields: {required_fields}"}), 400
+
+    response = supabase.table("books").insert([data]).execute()
+    return jsonify(response.data), 201
+
 
 @books_bp.route("/books/rating/<float:min_rating>", methods=["GET"])
 def books_by_rating(min_rating):
